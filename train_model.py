@@ -1,11 +1,9 @@
 import pandas as pd
 from sklearn.model_selection import train_test_split
 from sklearn.feature_extraction.text import CountVectorizer
-from sklearn.metrics import accuracy_score, classification_report, confusion_matrix
 from sklearn.naive_bayes import MultinomialNB
-import seaborn as sns
+from sklearn.metrics import accuracy_score
 import joblib
-import matplotlib.pyplot as plt
 
 # Load dataset
 df = pd.read_csv('spam.csv', encoding='latin-1')[['v1', 'v2']]
@@ -18,10 +16,15 @@ X_train, X_test, y_train, y_test = train_test_split(df['text'], df['label'], tes
 # Vectorization
 vectorizer = CountVectorizer()
 X_train_vec = vectorizer.fit_transform(X_train)
+X_test_vec = vectorizer.transform(X_test)
 
 # Train model
 model = MultinomialNB()
 model.fit(X_train_vec, y_train)
+
+# Evaluate
+accuracy = accuracy_score(y_test, model.predict(X_test_vec))
+print(f"Model Accuracy: {accuracy * 100:.2f}%")
 
 # Save model and vectorizer
 joblib.dump(model, 'spam_model.joblib')
